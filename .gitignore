@@ -1,0 +1,33 @@
+# Course data: for use within the course only - never commit
+data/audio/*
+data/test/*
+data/*.csv
+docs/course-brief.pdf
+!data/audio/.gitkeep
+!data/test/.gitkeep
+*.wav
+*.flac
+*.mp3
+
+# Model weights / large artifacts
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.npy
+*.npz
+models/
+checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.env
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
