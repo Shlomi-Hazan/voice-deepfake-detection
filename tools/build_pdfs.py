@@ -121,7 +121,7 @@ def render_html(md_path: Path) -> tuple[str, str]:
 
     css = CSS % dict(
         font=FONT,
-        size=((("11.6pt" if len(text) < 3300 else "11.0pt" if len(text) < 4000 else "10.4pt" if len(text) < 4700 else "10.0pt") if lang == "he"
+        size=((("11.6pt" if len(text) < 3300 else "11.0pt" if len(text) < 4000 else "10.4pt" if len(text) < 4300 else "10.0pt") if lang == "he"
                else ("10.8pt" if len(text) < 3300 else "10.2pt" if len(text) < 4200 else "9.6pt" if len(text) < 5200 else "9.1pt")) if is_summary
               else ("12.2pt" if lang == "he" else "11.5pt")),
         align="justify" if is_summary else "start",
