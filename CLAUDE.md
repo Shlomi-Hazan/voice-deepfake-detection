@@ -123,7 +123,7 @@ Stage 2 must contain: research question and hypotheses, at least two approaches 
 |---|---|---|---|
 | ASVspoof 5 | 300 | 300 | TTS and voice conversion, systems A09-A16 |
 | CodecFake | 300 | 300 | neural codecs (DAC, SpeechTokenizer, FunCodec, ...) |
-| AILABS-M | 320 | none | real audiobook recordings only |
+| M-AILABS | 320 | none | real audiobook recordings only |
 
 `train.csv` has a label, dataset, speaker and spoofing system per clip. **Read the real header first and do not assume column names.**
 
@@ -131,14 +131,14 @@ Stage 2 must contain: research question and hypotheses, at least two approaches 
 
 - **Never split randomly by clip.** The same speaker must never appear in both train and validation. Use grouped splits (`GroupKFold` / `StratifiedGroupKFold` on speaker). A split that mixes speakers gives optimistic numbers that only show up on competition day.
 - Report **per-dataset** and **per-spoofing-system** EER, not only pooled EER.
-- Run **generalization experiments**: leave-one-dataset-out (note AILABS-M has no fakes, so it is real-only evidence and cannot yield EER alone) and leave-one-system-out for unseen attacks.
+- Run **generalization experiments**: leave-one-dataset-out (note M-AILABS has no fakes, so it is real-only evidence and cannot yield EER alone) and leave-one-system-out for unseen attacks.
 - Systems with very few samples: report counts next to every per-system number and flag high-variance results. Do not over-interpret them.
 - All preprocessing statistics (scalers, PCA, thresholds, vocabularies) are fit **on training folds only**.
 - Fix and log random seeds. Report mean and spread over folds or seeds where feasible.
 
 **Shortcut risks to actively test, not just mention:**
 
-- Dataset identification instead of fake detection. AILABS-M is real-only, so "audiobook-like means real" is an easy trap. Check whether a classifier can predict the dataset from the features, and whether the detector's score correlates with the dataset.
+- Dataset identification instead of fake detection. M-AILABS is real-only, so "audiobook-like means real" is an easy trap. Check whether a classifier can predict the dataset from the features, and whether the detector's score correlates with the dataset.
 - Recording/channel artifacts: loudness, DC offset, leading or trailing silence, bandwidth cutoff, clip duration or padding, codec fingerprints unrelated to spoofing.
 - Speaker or text leakage between folds.
 - Class and dataset imbalance driving the pooled EER.
@@ -188,7 +188,7 @@ The course allows AI tools but requires the prompts to be documented and submitt
 
 ## 12. External sources and attribution
 
-Every external paper, code base and pretrained model must be cited in the report and the presentation. The three datasets (ASVspoof 5, CodecFake, AILABS-M) must be named as the data source. Starting reading list: ASVspoof 5 (2024), CodecFake (Interspeech 2024), AASIST (ICASSP 2022), wav2vec 2.0 (2020), WavLM (2022), CQCC (2017), plus work on generalization to unseen attacks and the 2026 papers added by the team.
+Every external paper, code base and pretrained model must be cited in the report and the presentation. The three datasets (ASVspoof 5, CodecFake, M-AILABS) must be named as the data source. Starting reading list: ASVspoof 5 (2024), CodecFake (Interspeech 2024), AASIST (ICASSP 2022), wav2vec 2.0 (2020), WavLM (2022), CQCC (2017), plus work on generalization to unseen attacks and the 2026 papers added by the team.
 
 ## 13. How to work with the user
 

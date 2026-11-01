@@ -3,7 +3,7 @@
 The course data (1,520 WAV clips + `train.csv`) is for use within the course only
 and is **not** committed (see `.gitignore`).
 
-Sources: ASVspoof 5, CodecFake, AILABS-M.
+Sources: ASVspoof 5, CodecFake, M-AILABS.
 
 ## Expected layout (local only)
 ```
