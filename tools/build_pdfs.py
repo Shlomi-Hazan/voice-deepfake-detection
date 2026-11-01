@@ -121,8 +121,8 @@ def render_html(md_path: Path) -> tuple[str, str]:
 
     css = CSS % dict(
         font=FONT,
-        size=((("11.6pt" if len(text) < 3300 else "11.0pt" if len(text) < 5000 else "10.4pt") if lang == "he"
-               else ("10.8pt" if len(text) < 3300 else "10.2pt" if len(text) < 4200 else "9.6pt")) if is_summary
+        size=((("11.6pt" if len(text) < 3300 else "11.0pt" if len(text) < 4000 else "10.4pt" if len(text) < 4700 else "10.0pt") if lang == "he"
+               else ("10.8pt" if len(text) < 3300 else "10.2pt" if len(text) < 4200 else "9.6pt" if len(text) < 5200 else "9.1pt")) if is_summary
               else ("12.2pt" if lang == "he" else "11.5pt")),
         align="justify" if is_summary else "start",
         start="right" if lang == "he" else "left",
@@ -183,7 +183,9 @@ def main():
                 page.goto(tmp.as_uri())
                 page.wait_for_load_state("load")
                 page.pdf(path=str(pdf), format="A4", print_background=True,
-                         margin=dict(top="22mm", bottom="22mm", left="22mm", right="22mm"),
+                         margin=(dict(top="18mm", bottom="18mm", left="20mm", right="20mm")
+                                 if "summary" in md.name else
+                                 dict(top="22mm", bottom="22mm", left="22mm", right="22mm")),
                          display_header_footer=True, header_template="<div></div>",
                          footer_template=FOOTER)
             finally:
