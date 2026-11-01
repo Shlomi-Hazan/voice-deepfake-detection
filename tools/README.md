@@ -6,6 +6,7 @@
 | `make_figures_asvspoof5.py` | Renders the three illustrations of the ASVspoof 5 research card (HE + EN) into `literature/01-asvspoof5/figures/`. |
 | `make_figures_cqcc.py` | Renders the three illustrations of the CQCC research card (HE + EN) into `literature/02-cqcc/figures/`. |
 | `make_figures_aasist.py` | Renders the three illustrations of the AASIST research card (HE + EN) into `literature/03-aasist/figures/`. |
+| `make_figures_wav2vec2.py` | Renders the two illustrations of the wav2vec 2.0 research card (HE + EN) into `literature/04-wav2vec2/figures/`. |
 
 ## Setup (once)
 ```

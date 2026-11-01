@@ -17,8 +17,9 @@ Translations are direct and exact; technical terms stay in English.
 1. ASVspoof 5
 2. CQCC
 3. AASIST
-4. wav2vec 2.0 and WavLM
-5. CodecFake
-6. One-Class Learning + Wav2vec2 (2026)
-7. Enhanced Forensic Trace Generation (2026)
-8. Intelligent Voice Fraud Detection (2026)
+4. wav2vec 2.0
+5. WavLM
+6. CodecFake
+7. One-Class Learning + Wav2vec2 (2026)
+8. Enhanced Forensic Trace Generation (2026)
+9. Intelligent Voice Fraud Detection (2026)
