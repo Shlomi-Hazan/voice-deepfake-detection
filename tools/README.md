@@ -5,6 +5,7 @@
 | `build_pdfs.py` | Builds PDFs from `*.he.md` (right-to-left) and `*.en.md` (left-to-right) with Chromium. Never edits the Markdown. |
 | `make_figures_asvspoof5.py` | Renders the three illustrations of the ASVspoof 5 research card (HE + EN) into `literature/01-asvspoof5/figures/`. |
 | `make_figures_cqcc.py` | Renders the three illustrations of the CQCC research card (HE + EN) into `literature/02-cqcc/figures/`. |
+| `make_figures_aasist.py` | Renders the three illustrations of the AASIST research card (HE + EN) into `literature/03-aasist/figures/`. |
 
 ## Setup (once)
 ```

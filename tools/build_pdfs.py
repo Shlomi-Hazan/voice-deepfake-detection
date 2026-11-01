@@ -52,6 +52,8 @@ a { color: #1f3a5f; overflow-wrap: anywhere; }
 p.subtitle { text-align: center; font-style: italic; font-size: 13pt; color: #333;
              margin: -0.3em 0 1.2em; unicode-bidi: plaintext; }
 p.src { font-size: 10pt; color: #555; font-style: italic; margin-top: 0.8em; }
+div.chain { margin: 0.8em auto; width: fit-content; text-align: left; }
+div.chain p { margin: 0.15em 0; text-align: left; }
 p.formula { direction: ltr; text-align: center; font-size: 12.5pt; margin: 0.7em 0;
             font-style: italic; }
 table { border-collapse: collapse; width: 100%%; margin: 0.9em 0 1.1em; font-size: 10.5pt;
@@ -87,10 +89,17 @@ def render_html(md_path: Path) -> tuple[str, str]:
     def formula(m):
         inner = m.group(1)
         plain = re.sub(r"<[^>]+>", "", inner)
-        if "=" in plain and not HEBREW.search(plain) and "<img" not in inner and len(plain) < 120:
+        if any(c in plain for c in "=∈≈") and not HEBREW.search(plain) and "<img" not in inner and len(plain) < 120:
             return f'<p class="formula">{inner}</p>'
         return m.group(0)
     body = re.sub(r"<p>(.*?)</p>", formula, body, flags=re.S)
+
+    def chain(m):
+        first, arrows = m.group(1) or "", m.group(2)
+        if HEBREW.search(first):  # the preceding paragraph is normal prose
+            return first + f'<div class="chain" dir="ltr">{arrows}</div>'
+        return f'<div class="chain" dir="ltr">{first}{arrows}</div>'
+    body = re.sub(r"(<p>(?!→)[^<]*</p>\s*)?((?:<p>→[^<]*</p>\s*)+)", chain, body)
 
     body = re.sub(r"(</h1>\s*)<h2>(?!\d)(.*?)</h2>", r'\1<p class="subtitle">\2</p>', body, flags=re.S)
 
@@ -112,7 +121,9 @@ def render_html(md_path: Path) -> tuple[str, str]:
 
     css = CSS % dict(
         font=FONT,
-        size=("11.6pt" if lang == "he" else "10.8pt") if is_summary else ("12.2pt" if lang == "he" else "11.5pt"),
+        size=((("11.6pt" if len(text) < 3900 else "11.0pt") if lang == "he"
+               else ("10.8pt" if len(text) < 3300 else "10.2pt")) if is_summary
+              else ("12.2pt" if lang == "he" else "11.5pt")),
         align="justify" if is_summary else "start",
         start="right" if lang == "he" else "left",
     )
