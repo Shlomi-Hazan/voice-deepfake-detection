@@ -49,6 +49,8 @@ ul, ol { margin: 0.4em 0 0.7em; padding-%(start)s: 1.7em; }
 li { margin: 0.22em 0; }
 strong { color: #111; }
 a { color: #1f3a5f; overflow-wrap: anywhere; }
+p.subtitle { text-align: center; font-style: italic; font-size: 13pt; color: #333;
+             margin: -0.3em 0 1.2em; unicode-bidi: plaintext; }
 p.src { font-size: 10pt; color: #555; font-style: italic; margin-top: 0.8em; }
 p.formula { direction: ltr; text-align: center; font-size: 12.5pt; margin: 0.7em 0;
             font-style: italic; }
@@ -79,15 +81,18 @@ def render_html(md_path: Path) -> tuple[str, str]:
         r"<figure>\1<figcaption>\2</figcaption></figure>", body, flags=re.S)
 
     # source lines ("Source:" / "מקור:")
-    body = re.sub(r"<p>(<strong>(?:Source|מקור):</strong>)", r'<p class="src">\1', body)
+    body = re.sub(r"<p>(<strong>(?:Source(?: in the paper)?|מקור(?: במאמר)?):</strong>)", r'<p class="src">\1', body)
 
     # standalone formulas (no Hebrew, contain "=")
     def formula(m):
         inner = m.group(1)
-        if "=" in inner and not HEBREW.search(inner) and "<" not in inner and len(inner) < 120:
+        plain = re.sub(r"<[^>]+>", "", inner)
+        if "=" in plain and not HEBREW.search(plain) and "<img" not in inner and len(plain) < 120:
             return f'<p class="formula">{inner}</p>'
         return m.group(0)
     body = re.sub(r"<p>(.*?)</p>", formula, body, flags=re.S)
+
+    body = re.sub(r"(</h1>\s*)<h2>(?!\d)(.*?)</h2>", r'\1<p class="subtitle">\2</p>', body, flags=re.S)
 
     if lang == "he":
         # A closing . ? ; : after a Latin word inside an RTL paragraph would otherwise
