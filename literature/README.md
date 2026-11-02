@@ -22,4 +22,4 @@ Translations are direct and exact; technical terms stay in English.
 6. [CodecFake](https://arxiv.org/pdf/2406.07237)
 7. [Enhanced Forensic Trace Generation (2026)](https://link.springer.com/article/10.1007/s11760-026-05167-y)
 8. [Intelligent Voice Fraud Detection (2026)](https://link.springer.com/article/10.1134/S1054661826700203)
-9. One-Class Learning + Wav2vec2 (2026) — link not yet available
+9. [One-Class Learning + Wav2vec2 (2026)](https://doi.org/10.1109/CNML68938.2026.11452384)
