@@ -10,6 +10,7 @@
 | `make_figures_wavlm.py` | Renders the three illustrations of the WavLM research card (HE + EN) into `literature/05-wavlm/figures/`. |
 | `make_figures_codecfake.py` | Renders the three illustrations of the CodecFake research card (HE + EN) into `literature/06-codecfake/figures/`. |
 | `make_figures_enhanced_forensic_trace.py` | Renders the two illustrations of the Enhanced Forensic Trace Generation research card (HE + EN) into `literature/07-enhanced-forensic-trace/figures/`. |
+| `make_figures_intelligent_voice_fraud.py` | Renders the three illustrations of the Intelligent Voice Fraud Detection research card (HE + EN) into `literature/08-intelligent-voice-fraud/figures/`. |
 
 ## Setup (once)
 ```
