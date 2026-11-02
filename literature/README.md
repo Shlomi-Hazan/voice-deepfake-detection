@@ -23,3 +23,7 @@ Translations are direct and exact; technical terms stay in English.
 7. [Enhanced Forensic Trace Generation (2026)](https://link.springer.com/article/10.1007/s11760-026-05167-y)
 8. [Intelligent Voice Fraud Detection (2026)](https://link.springer.com/article/10.1134/S1054661826700203)
 9. [One-Class Learning + Wav2vec2 (2026)](https://doi.org/10.1109/CNML68938.2026.11452384)
+
+*Note: the AASIST and One-Class Learning + Wav2vec2 links point to IEEE Xplore.
+Some IEEE pages require institutional access to view the full text; the
+bibliographic page itself is open to everyone.*
