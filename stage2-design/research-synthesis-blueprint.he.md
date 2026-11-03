@@ -2,12 +2,12 @@
 
 ## תוכנית מחקר וניסויים לזיהוי זיופים קוליים ולהערכת הכללה למתקפות לא מוכרות
 
-**Project:** Fake or Real: Voice Deepfake Detection
-**Researchers:** Shlomi Hazan & Mayan Adler
-**Course:** Advanced Topics in Machine Learning, HIT
-**Research foundation:** Nine academic papers, 2017–2026
-**Version:** 1.0 — 2 November 2026
-**Document status:** Proposed Research Design — Before Empirical Evaluation
+**פרויקט:** Fake or Real: Voice Deepfake Detection
+**חוקרים:** Shlomi Hazan & Mayan Adler
+**מסגרת:** Advanced Topics in Machine Learning, HIT
+**בסיס מחקרי:** תשעה מאמרים אקדמיים, 2017–2026
+**גרסה:** 1.0 — 2 בנובמבר 2026
+**מעמד המסמך:** תכנון מחקר מוצע — לפני הערכה אמפירית
 
 ---
 
