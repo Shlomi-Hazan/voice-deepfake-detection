@@ -1,7 +1,5 @@
 # Integrated Literature Review: Voice Deepfake Detection and Generalization to Unseen Attacks
 
-**סקירת ספרות אינטגרטיבית: זיהוי זיופים קוליים והכללה למתקפות לא מוכרות**
-
 **Project:** Fake or Real: Voice Deepfake Detection
 **Researchers:** Shlomi Hazan & Mayan Adler
 **Course:** Advanced Topics in Machine Learning, HIT
