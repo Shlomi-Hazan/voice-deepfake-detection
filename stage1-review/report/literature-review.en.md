@@ -1,30 +1,30 @@
 # Integrated Literature Review: Voice Deepfake Detection and Generalization to Unseen Attacks
 
-**Project:** Fake or Real: Voice Deepfake Detection
-**Researchers:** Shlomi Hazan & Mayan Adler
-**Course:** Advanced Topics in Machine Learning, HIT
-**Scope of the review:** Nine research papers, 2017–2026
-**Document status:** Foundational research document for the literature review and for formulating the research question
+**Project:** Fake or Real: Voice Deepfake Detection  
+**Researchers:** Shlomi Hazan & Mayan Adler  
+**Course:** Advanced Topics in Machine Learning, HIT  
+**Scope of the review:** 12 research papers read and analyzed within the project, 2017–2026  
+**Document status:** Revised edition following research critique — Document A | November 7, 2026
 
 ---
 
 ## Abstract
 
-The development of speech synthesis (Text-to-Speech) technologies, Voice Conversion, and Neural Audio Codecs makes it possible to produce high-quality synthetic voice recordings, which challenge voice authentication systems and forgery detection mechanisms. Although advanced models for voice forgery detection show high performance on known evaluation datasets, the research literature points to a persistent difficulty in generalizing to new forgery methods, to speakers not seen in training, and to different recording conditions. This difficulty raises a central question: does a model learn features that are essential to forgery, or does it rely on patterns that depend on the generation technology and the data source on which it was trained?
+The development of speech synthesis (Text-to-Speech) technologies, Voice Conversion, and Neural Audio Codecs makes it possible to produce high-quality synthetic voice recordings, which challenge voice authentication systems and forgery detection mechanisms. Although advanced models for voice forgery detection show high performance on known evaluation datasets, the research literature points to a persistent difficulty in generalizing to new forgery methods, to speakers not seen in training, and to different recording conditions. This difficulty raises a central question: to what extent does the model detect signs related to the creation of synthetic speech, and to what extent does its performance depend on the data source and on the conditions observed during training? Error patterns may indicate a possible dependence on the source, but do not by themselves reveal the model's decision mechanism.
 
-This review integratively analyzes nine studies dealing with voice forgery detection, speech representation, and generalization between attacks and datasets. The studies are examined along five central directions: pre-computed acoustic features, deep architectures for artifact detection, speech representations based on Self-Supervised Learning, improving representations by means of guided reconstruction, and One-Class Learning. In addition, the ASVspoof 5 and CodecFake datasets are examined as evaluation frameworks that emphasize the variance between attacks and the limitations of generalization.
+This review integratively analyzes twelve core studies dealing with voice forgery detection, speech representation, and generalization between attacks and datasets. The studies are examined along five central directions: pre-computed acoustic features, deep architectures for artifact detection, speech representations based on Self-Supervised Learning, improving representations by means of guided reconstruction, and One-Class Learning. In addition, ASVspoof 5 and CodecFake are examined as evaluation frameworks, MLAAD and PhonemeDF as candidate external sources for data expansion, and AT-ADD as a study on robustness and generalization.
 
 The literature shows that the choice of representation, the classification architecture, and the learning paradigm affect detection performance, but it cannot be assumed that an improvement on a particular dataset will be preserved when moving to a different data source or forgery method. In particular, feature combination, the use of pre-trained models, and learning the distribution of real speech offer promising directions, but each is accompanied by methodological limitations and risks of overfitting or shortcut learning.
 
-Based on these findings, the review proposes examining the effect of speech representation and learning paradigm on the ability to generalize to forgeries not seen in training, by means of a controlled comparison of classical models, SSL representations, and one-class classifiers. The evaluation should distinguish between generalization to new attacks and sensitivity to differences in source, speaker, and recording conditions, while using a consistent data-splitting protocol and appropriate detection metrics.
+Based on these findings, the review proposes examining the effect of the speech representation, the learning paradigm, and the composition of the training data on the ability to generalize to forgeries not seen in training, by means of a controlled comparison of classical models, SSL representations, and one-class classifiers. In addition, a research framework is proposed that distinguishes between increasing the number of training examples and expanding the diversity of forgery systems, and between Leave-One-System-Out experiments and Cross-Dataset Evaluation. The evaluation should distinguish between generalization to new attacks and sensitivity to differences in source, speaker, and recording conditions, while using a consistent data-splitting protocol and appropriate detection metrics.
 
-**Keywords:** Audio Deepfake Detection, Speech Anti-Spoofing, Generalization, Unseen Attacks, ASVspoof 5, CodecFake, CQCC, AASIST, wav2vec 2.0, WavLM, One-Class Learning, Deep SVDD, EER.
+**Keywords:** Audio Deepfake Detection, Speech Anti-Spoofing, Unseen Attacks, Cross-Dataset Generalization, Speaker Generalization, Channel Robustness, MLAAD, PhonemeDF, AT-ADD, ASVspoof 5, CodecFake, CQCC, AASIST, wav2vec 2.0, WavLM, One-Class Learning, Deep SVDD, EER.
 
 ---
 
 ## 1. Introduction: The Problem of Voice Forgery Detection
 
-Voice recognition and authentication systems are used in a variety of applications, including remote identity verification, banking systems, voice user interfaces, and biometric security measures. Alongside the advancement of these systems, the ability of technologies to produce synthetic speech resembling human speech has improved significantly. Text-to-Speech (TTS) technologies make it possible to generate speech from text, while Voice Conversion (VC) technologies make it possible to change the features of an existing voice while preserving part of its content. Further developments in the field of Neural Audio Codecs make it possible to encode, reconstruct, and generate speech signals by means of discrete representations learned by neural networks.
+Voice recognition and authentication systems are used in a variety of applications, including remote identity verification, banking systems, voice user interfaces, and biometric security measures. Alongside the advancement of these systems, the ability of technologies to produce synthetic speech resembling human speech has improved significantly. Text-to-Speech (TTS) technologies make it possible to generate speech from text, while Voice Conversion (VC) technologies make it possible to change the features of an existing voice while preserving part of its content. Further developments in the field of Neural Audio Codecs make it possible to encode and reconstruct speech signals by means of representations learned by neural networks, and sometimes also serve as a component in synthetic generation systems. However, processing a signal by means of a neural codec does not by itself indicate that the speech source is synthetic; the authenticity label depends on the task and on the protocol of the dataset.
 
 These capabilities raise a significant security challenge: a synthetic recording can preserve features perceived as authentic and even resemble a particular speaker, without having been created by means of the natural speech of that person. For this reason, two related but non-identical tasks must be distinguished. Speaker Verification examines the match between the recording's voice and the claimed identity of the speaker, whereas Speech Anti-Spoofing examines whether the recording itself is authentic or was created by means of manipulation. The present study focuses on the second task: classifying speech into Bona Fide and Spoof, without the need to decide on the speaker's identity.
 
@@ -32,7 +32,7 @@ One of the central challenges in forgery detection is the generalization gap bet
 
 This problem is at the center of two studies dealing directly with evaluation datasets and modern forgery methods: ASVspoof 5 by Wang et al. (2024) [1] and CodecFake by Wu et al. (2024) [2]. The first emphasizes the diversity in speech conditions and the threat of sophisticated attacks, while the second demonstrates how moving to a different family of generation technologies may expose the limitations of existing detection systems.
 
-Accordingly, the research question is not reduced to identifying the model with the lowest error rate on a given dataset. One must also examine the nature of the information the model exploits, the degree of its dependence on known forgery examples, and its ability to distinguish between signs essential to forgery and differences unrelated to the recording's authenticity.
+Accordingly, the research question is not reduced to identifying the model with the lowest error rate on a given dataset. One must also examine how error patterns vary between attacks and sources, and to what extent the findings are consistent with a dependence on source features or on processing conditions. Causal attribution of the model's decisions to a particular feature requires additional control checks, and cannot be derived directly from an overall EER metric.
 
 ---
 
@@ -60,21 +60,81 @@ The researchers use VCTK data, separating speakers between the training, develop
 
 For example, the researchers report an EER of 0.40% in detecting VALL-E examples for a model trained under a particular CodecFake condition. However, this result refers to a defined experimental configuration and does not represent the performance of all CodecFake models or the generalization ability to every Codec-based attack.
 
+One must distinguish between **a Neural Codec as processing or as a signal-transmission channel**, and **Codec Resynthesis as defined in CodecFake as a Spoof condition**. Within CodecFake, the reconstructed examples are labeled as fake in order to examine the ability to detect artifacts stemming from the reconstruction process [2]; in other protocols, such as the coding conditions in ASVspoof 5 [1] and the signal processing in AT-ADD [12], coding can apply to both Real and Fake without changing the label of the speech source. Therefore success on CodecFake does not prove that the model distinguishes well between synthetic speech and legitimate human speech that underwent coding, and the label definition in each Benchmark should be reported separately.
+
 From a research perspective, CodecFake highlights the difference between generalization within a forgery family and generalization between forgery families. A model may successfully detect reconstructions created by means of a known codec, but struggle to detect reconstructions from a system with a different encoding mechanism. It follows that reporting an overall EER is not sufficient; it is necessary to examine how the results change according to the type of forgery system.
 
-### 2.3 Three Different Aspects of Generalization
+### 2.3 A Map of the Generalization Dimensions
 
-Combining the findings of ASVspoof 5 and CodecFake makes it possible to distinguish between three types of distribution shifts:
+The four dimensions relevant to the study are **Unseen Attack Generalization** (generation systems or families not observed in training), **Cross-Dataset Generalization** (moving between datasets), **Speaker Generalization** (new speaker identities), and **Acoustic/Channel Robustness** (changes in processing or recording conditions that are not supposed to change authenticity). They are not equivalent: in one protocol a single dimension may change, and in another several dimensions together. The definitions, limitations, and the protocol matrix are detailed in Section 2.4.
 
-**Attack Generalization:** the model's ability to detect TTS, VC, or forgery systems not included in training.
+### 2.4 Cross-Domain Benchmarking and Evaluation Validity
 
-**Cross-Dataset Generalization:** the ability to maintain performance when the data source changes, including speaker features, content, and recording conditions.
+The foundational conclusion arising from ASVspoof 5 [1] and CodecFake [2] is that the term *Generalization* should not be treated as a single property of a model. Each experimental protocol determines which factor is held constant and which factor changes, and accordingly which conclusions can be attributed to the results. AT-ADD by Xie and colleagues (2026) [12] deepens this distinction by evaluating attacks not seen in training alongside changing recording conditions, processing, and Replay. Combined with the findings of MLAAD [10] on transitions between datasets, these studies illustrate that different protocols may expose different generalization difficulties, but do not necessarily isolate the cause of the decline in performance.
 
-**Channel and Codec Robustness:** the ability to distinguish between forgery features and changes created due to compression, bandwidth changes, or signal processing.
+#### 2.4.1 Unseen Attack Generalization: Generalization to New Generation Systems
 
-The three aspects are related to each other, but are not equivalent. When a model shows a decline in performance when moving from one dataset to another, this cannot be automatically attributed only to new attacks. Part of the decline may stem from source differences not directly related to forgery.
+In an experiment aimed at *Unseen Attack Generalization*, the evaluation set includes TTS, VC, Vocoder, or Codec systems that were not used in training. For example, in a Leave-One-System-Out (LOSO) design, a particular generation system is removed from the training set and it is tested whether the detector detects examples produced by means of it. A stricter definition may remove an entire architecture family, since the names of different systems do not necessarily indicate independent generation mechanisms. The experiment tests generalization to the system or family left out, *within the other protocol conditions that were defined*. If the same speakers and sources appear in Train and in Test, the result should not be interpreted as proof of generalization also to new speakers or sources.
 
-This distinction forms a central basis for formulating a valid evaluation protocol in the present study.
+CodecFake [2] provides an empirical justification for separation between Codec families, while ASVspoof 5 [1] separates attack identifiers according to its original splits. AT-ADD Track 1 [12] extends this by means of 20 generation conditions in Train/Dev versus 27 forgery conditions in Eval, which also include two synthetic-speech Replay conditions. It follows that it is not correct to describe all 27 conditions as independent synthesis systems or to conclude that every change in performance stems from architectural novelty alone.
+
+#### 2.4.2 Cross-Dataset Generalization: Moving between Data Sources
+
+In *Cross-Dataset Generalization*, a model trained on one data source is tested against examples from another source, for example training on ASVspoof 5 and evaluating on CodecFake. Such a transition may change simultaneously the forgery classes, speakers, languages, microphone features, audio duration, and processing procedures. Therefore a higher EER when moving between datasets is evidence of a difficulty in *overall Domain Shift*, but is not exclusive evidence of a failure to detect a new attack. The distinction is also essential when the external dataset includes real and fake examples from different sources.
+
+MLAAD [10] demonstrates that Cross-Dataset performance depends on the training dataset and on the evaluation dataset; there is no single training dataset that dominated all the comparison scenarios examined. CodecFake [2] adds evidence that moving to examples created in neural codecs may expose transfer failures from systems trained on other forgery datasets. Both findings reinforce the need to report the training source and the evaluation source, but do not by themselves isolate the effect of changing the generation system from the effect of changes in speakers and recording conditions.
+
+#### 2.4.3 Speaker Generalization: Separation between Speaker Identities
+
+*Speaker Generalization* examines whether a detector identifies authenticity for speakers who did not appear in training. For this purpose the speaker must be identified and the data split at the Speaker ID level, and not only at the file level. When source recordings and synthetic versions derived from them exist, preserving source groups is also required in order to prevent almost identical content or source signal from passing between splits. Speaker separation does not replace separation between forgery systems, and vice versa.
+
+AT-ADD [12] reports a planned speaker separation but documents 18 Common Voice identities overlapping between chosen sets. It follows that the dataset is not fully Speaker-Disjoint. Also in PhonemeDF [11], where parallel synthetic versions are derived from the same LibriSpeech recordings, evaluation validity requires keeping the families of source recordings in the same split. The two examples illustrate that one should not conclude from the title *Cross-Domain* or *Unseen Attack* that full separation between speakers and sources was guaranteed; each condition must be verified by means of metadata and the splitting protocol.
+
+#### 2.4.4 Acoustic and Channel Robustness: Robustness to Signal and Channel Changes
+
+*Acoustic and Channel Robustness* refers to preserving performance after changes that are not supposed to change the authenticity label: compression, filtering, Resampling, noise, reverberation, changing the recording or playback device, or playback and re-recording. This definition differs from detecting Replay as an attack in its own right in certain biometric tasks. In AT-ADD Track 1 [12], for example, human speech that was re-recorded remains Real and TTS speech that was re-recorded remains Fake. In this way the protocol emphasizes a distinction between the speech source and the channel the signal passed through.
+
+In order to evaluate robustness as cleanly as possible, it is advisable to apply the same signal change to the same recordings — or to matched sets — in both authenticity classes. When a certain change is more common in one class, the model may learn a shortcut through the processing features. AT-ADD provides evidence for the difficulties of BigVGAN and Replay and also for the wrong identification of Real from the 3D-Speaker source in some of the systems, but does not isolate in a uniform experiment the effect of each channel condition.
+
+#### 2.4.5 The Protocol Matrix: What Claim Can the Study Support?
+
+| Protocol | What is held out of training | What can be claimed | What cannot be claimed without further checking |
+|---|---|---|---|
+| Within-Dataset Speaker-Disjoint | Speakers and source groups | Generalization to new speakers within the dataset | Generalization to a new attack or dataset |
+| Leave-One-System-Out | A forgery system / a system family | Generalization to the system that was excluded | Generalization to new sources and channels if they overlap |
+| Cross-Dataset Held-Out | An entire dataset | Ability to transfer to a different data source | Identifying the causal factor for the decline in performance |
+| Controlled Channel Perturbation | A defined processing condition | Robustness to the signal change tested | Robustness to all forms of Replay or to every device |
+| Joint Cross-Domain | Speakers, systems, and sources together | Generalization under combined distribution shift | Separating the contribution of each dimension to the error |
+
+This distinction sharpens the need to separate two questions: *Does the model fail when the domain changes?* versus *Which factor in the new domain is responsible for the failure?* The first question is examined by means of an external Benchmark; the second requires suitable controls or Ablation experiments. Accordingly, in the present project Leave-One-System-Out and Cross-Dataset are not substitutes but complementary experiments with different interpretive boundaries.
+
+### 2.5 MLAAD and PhonemeDF: Expanding Data versus Expanding Diversity
+
+Alongside improving the architecture, another possible path for coping with generalization gaps is changing the composition of the training data. MLAAD [10] and PhonemeDF [11] offer two resources that differ in the diversity of speech and the diversity of generation systems. In both, the mere availability of many synthesis files does not prove that adding them will improve generalization; one must distinguish between the number of examples, the number of systems, the identity of the speech sources, and the speaker composition.
+
+#### 2.5.1 MLAAD: A Wide Variety of TTS Systems and Languages
+
+Müller and colleagues [10] present MLAAD, a multilingual synthetic-speech dataset based on texts and source recordings related to M-AILABS. In version v11 described in the paper, about 1,153.6 hours of synthetic speech from 205 TTS models in 54 languages are included. The dataset includes metadata such as language, model architecture, generation-system name, transcript, and a link to the source file; information on the reference speaker is documented starting from later versions. This scope makes it a candidate for increasing synthesis diversity, although it distributes synthetic Fake files only, and the Real examples must be matched from a licensed source such as M-AILABS; it focuses mainly on TTS and does not structurally provide the same VC coverage as PhonemeDF.
+
+The work was originally published at IJCNN 2024, while the dataset-scope figures of v11 refer to the 2026 arXiv update. A critical limitation for interpreting the results is that the Cross-Dataset experiments reported in the paper were carried out on **MLAAD v1**, and were not automatically repeated on all the later versions of the dataset. The authors report that MLAAD and ASVspoof 2019 complement each other, with each leading in four of the eight evaluation settings; this is not empirical proof that version v11 will necessarily achieve better performance, or that increasing the quantity is by itself the cause of the improvement. Likewise, since the dataset was built on the basis of M-AILABS — a source that appears as Real only also in the course data — there is a practical need to check the overlap of source files, texts, and speakers before integrating it into training.
+
+#### 2.5.2 PhonemeDF: Source Matching and Phonetic Analysis
+
+Nallaguntla and colleagues [11] present PhonemeDF, a parallel dataset based on 28,539 real speech recordings from LibriSpeech and on 199,773 synthetic versions created in four TTS systems and three VC systems. The data is accompanied by phoneme boundaries computed by means of the Montreal Forced Aligner and by TextGrid files. This design makes it possible to compare acoustic features of matching phonetic units and to examine whether artifacts appear non-uniformly throughout the speech.
+
+In an analysis on a subset of 1,000 source recordings, the researchers use LFCC, LogSpec, wav2vec 2.0, and WavLM, together with KLD, LR/SVM classifiers, and Pearson correlations. They find notable differences between phonemes, synthesis systems, and representations. However, the relationship between the size of KLD and Accuracy is not consistent between Handcrafted Features and SSL representations, and may even be negative. Therefore the paper does not prove that a high KLD entails an EER improvement at the recording level or that PhonemeDF necessarily improves generalization to systems not seen in training.
+
+For the present study, the dataset has a possible dual role: expanding training by means of additional TTS and VC systems, and phonetic error analysis as an advanced stage. Since each source recording gives rise to many synthetic versions, *the entire family of recordings derived from the same source* must be kept within the same split. Otherwise, classification may be aided by content or source signals that crossed between Train and Test. Licensing, Speaker Metadata, and sources should also be verified before practical use.
+
+#### 2.5.3 Why Are "More Data" and "More Diversity" Different Hypotheses?
+
+Adding 10,000 synthetic recordings from the same TTS system may increase the number of training examples without broadening the coverage of forgery mechanisms. In contrast, adding 10,000 recordings divided among several TTS and VC systems may also increase diversity. If the two interventions are compared without controlling the number of examples, there is no way to know whether the improvement stems from the training volume, from the diversity of generation systems, from the speech sources, or from a combination of them.
+
+Therefore the conceptual recommendation is to distinguish between a **Size-Controlled Comparison** — changing the amount of data while keeping a similar composition — and a **Diversity-Controlled Comparison** — keeping the same number of examples while changing the number of generation systems or their families. In both cases, a consistent speaker and source split, class balancing, an equal processing policy, and a model-selection process that does not use Test must be maintained. These are *proposed research implications based on the sources*, and not experiments that the papers jointly proved.
+
+### 2.6 Synthesis: An External Benchmark Is Not a Substitute for a Causal Experiment
+
+The body of ASVspoof 5 [1], CodecFake [2], MLAAD [10], PhonemeDF [11], and AT-ADD [12] supports building a research plan on two levels: (a) **controlled experiments**, which isolate as much as possible the roles of the representation, the training volume, and the diversity of attacks; (b) **external-validity experiments**, which evaluate how the model performs under combined changes in the data source. Reporting separately on the two types of experiments prevents the error whereby a good result on an external test by itself reveals which component caused the improvement, or a good result in a LOSO experiment proves general robustness to every channel and dataset change.
 
 ---
 
@@ -200,6 +260,8 @@ Furthermore, different layers of an SSL model may preserve different types of in
 
 It follows that using a Pre-trained Encoder is a reasonable research hypothesis, but not a guaranteed solution to the generalization problem. Its contribution should be examined empirically, under a protocol identical to that of the comparison methods.
 
+In addition, **the source of the Pre-training data is part of the validity protocol**. Since SSL models may be trained on broad corpora, the exact Checkpoint version and the known sources of the pre-training should be documented, and possible overlaps with the evaluation recordings and their source files should be checked. Prior exposure to unlabeled audio is not necessarily equivalent to leakage of Test labels during supervised training, but it may reduce the degree of independence of the evaluation; in the absence of sufficient information, the uncertainty should be reported, and the complete absence of overlap should not be claimed.
+
 ---
 
 ## 6. Improving Representations by Means of Guided Reconstruction and Highlighting Forensic Traces
@@ -307,12 +369,31 @@ The studies reviewed represent different approaches to forgery detection and to 
 | wav2vec 2.0 [5] | Speech representations by means of SSL | Generalization to ASR tasks with few labels | No direct proof of forgery detection in the original paper |
 | WavLM [6] | SSL for a variety of speech tasks | Performance on various speech tasks | Speaker Verification metrics are not Spoof EER |
 | Enhanced Forensic Trace [7] | Guided spectral reconstruction for highlighting artifacts | Improvement on ASVspoof 2021 LA | Added complexity and an improvement that is not uniform between features |
-| Intelligent Voice Fraud [8] | Combining MFCC, PLP, GMM–UBM, and CNN | Additional evaluation on TED-LIUM | Absence of full Ablation and implementation detail |
+| Intelligent Voice Fraud [8] | Combining MFCC, PLP, GMM–UBM, and CNN | Additional evaluation on TED-LIUM | Absence of Ablation and full implementation detail |
 | One-Class + wav2vec 2.0 [9] | Modeling real speech by means of Deep SVDD | Improved performance on ASVspoof 2021 DF | Sensitivity to Domain Shift and ambiguity in the tuning protocol |
+| MLAAD [10] | Expanding TTS systems and languages in training | Cross-Dataset experiments on v1 | v11 performance should not be inferred from v1 evaluations; overlaps with M-AILABS require checking |
+| PhonemeDF [11] | A parallel TTS/VC dataset with phoneme labeling | Analysis of phonetic separation between Real and Fake | No direct evidence of an EER improvement or generalization to Unseen Generators |
+| AT-ADD [12] | A robustness and generalization protocol under changing recording conditions | Generator Shift, Replay, channel, and error analysis | Combined domain changes; access to Track 1 data not verified |
 
 The table is used for a conceptual and methodological comparison between the studies. It does not constitute a numerical performance ranking, since the papers were examined on different datasets, tasks, and protocols.
 
-### 8.2 Four Shared Insights
+### 8.2 Empirical Evidence Anchors and Interpretive Boundaries
+
+The following table presents **internal comparisons only**: the numbers are intended to anchor particular claims in the original studies, not to rank all models across different datasets and metrics.
+
+| Study | Reported empirical comparison | What can be concluded — and what cannot |
+|---|---|---|
+| CodecFake [2] | For the VALL-E example an EER of 0.40% is reported under training on a particular CodecFake subset; training on a traditional dataset harms performance in the scenarios examined | The composition of training examples is relevant to transfer between Codec families; the value should not be generalized to all methods |
+| AASIST [4] | A mean EER of 1.13% across three runs on ASVspoof 2019 LA; best run 0.83% | Strong performance on a defined dataset; no automatic proof of generalization between datasets |
+| Enhanced Forensic Trace [7] | In the LPS representation, a move from 22.64% to 14.04% EER on ASVspoof 2021 LA | Guided reconstruction may help under the conditions tested; there is no uniform improvement in all representations |
+| One-Class + wav2vec 2.0 [9] | 6.89% versus 18.45% EER for a binary comparison system on ASVspoof 2021 DF | The combined system has an advantage in the reported experiment; it cannot be attributed to Deep SVDD alone |
+| MLAAD [10] | In Cross-Dataset tests on v1, MLAAD and ASVspoof 2019 each lead in four of eight evaluation configurations | Complementary training datasets; no controlled proof of improvement due to the move to v11 was carried out |
+| PhonemeDF [11] | Differences in KLD and Accuracy between phonemes and representations, including negative correlations in some SSL representations | There is phonetic variance in the discriminative signals; there is no direct evidence of an EER improvement at the recording level |
+| AT-ADD Track 1 [12] | 76.73% Macro-F1 for the leading official Baseline versus 90.71% for the winning system; BigVGAN and Replay are relatively difficult | The winners' complete system has superior performance in this protocol; there is no causal isolation of each component or ability to compare numerically with EER |
+
+These findings reinforce the conclusion that a system's success depends on the composition of the data, the representation, the training process, and the manner of evaluation. However, **no row is a joint experiment for all twelve studies**; the inference boundaries of each source are preserved separately.
+
+### 8.3 Six Integrative Insights
 
 **First, the choice of representation affects the ability to detect forgeries.** CQCC demonstrates the importance of spectral structure, AASIST learns temporal and spectral relations, and SSL provides pre-trained speech representations. However, none of the representations alone guarantees robustness to every type of attack.
 
@@ -322,13 +403,19 @@ The table is used for a conceptual and methodological comparison between the stu
 
 **Fourth, the usefulness of added complexity is not guaranteed.** Feature Fusion, VQ-VAE, and Multi-Model Fusion may improve performance, but also increase computational cost, sensitivity to tuning, and the risk of overfitting. In order to determine their value, their contribution must be examined by means of controlled experiments, and not relied upon only on the basis of the overall performance of a complex system.
 
-### 8.3 The Tension between a Rich Representation and a Robust Representation
+**Fifth, training diversity is an experimental variable separate from training volume.** MLAAD [10] and PhonemeDF [11] offer an opportunity to expand the forgery sources, but do not prove that increasing the quantity of files by itself explains an improvement in generalization. The addition of quantity and the addition of TTS/VC families should be examined separately, while controlling for the source and the number of examples.
+
+**Sixth, evaluation validity depends on the exact definition of the change.** AT-ADD [12] and CodecFake [2] offer strict protocols that take into account Generator, Speaker, Dataset, and Channel changes. However, performance under combined Shift does not identify the source of the failure without an additional controlled experiment.
+
+### 8.4 The Tension between a Rich Representation and a Robust Representation
 
 One of the insights arising from the synthesis is that there is a possible tension between enriching the speech representation and reducing its sensitivity to variance unrelated to forgery.
 
 A rich representation may preserve more details, including subtle artifacts created in synthesis processes. However, it may also preserve information about the speaker, language, recording channel, or dataset source. If the model relies on this information, an improvement in performance on the training data does not guarantee generalization ability.
 
 On the other hand, a representation whose purpose is to learn general and environment-robust features may suppress some of the acoustic details required for distinguishing between natural and fake speech.
+
+An additional finding from PhonemeDF [11] is that discriminative ability varies between phonemes: signs of forgery do not have to be distributed uniformly in time. This gives rise to **an additional but non-binding research hypothesis**: Temporal Mean Pooling of Embeddings at the recording level may dilute local artifacts, while Aggregation that preserves information of certain segments may preserve them. The paper does not prove an advantage of a different Pooling method for the course data, and therefore this is a possibility for future analysis or Ablation, and not a proven conclusion.
 
 The balance between the two directions is not unambiguously resolved in the literature reviewed. It requires an empirical evaluation that examines not only the quality of the classification but also the type of information on which the model's decisions are based.
 
@@ -362,17 +449,33 @@ Therefore, to the extent the data allows, further analysis by type of forgery sy
 
 Computing EER for a particular forgery system requires including alongside it a suitable set of real examples. EER cannot be computed from a set containing only fake examples or only real examples.
 
+In particular, **M-AILABS in the course subset contains only Real**, and therefore an independent EER cannot be computed for it. One can measure Real Recall, the rate of wrongful rejection at a threshold chosen in advance on Validation, and the distribution of authenticity scores, in addition to the number of recordings. Similarly, if a Generator is examined in which only Fake examples appear, Fake Recall should be computed or a suitable Real set should be explicitly defined in order to compute EER.
+
 When the number of examples is small, even a computed EER may be sensitive to a small number of wrong decisions. Therefore the size of the evaluation sets must be reported, and one must be cautious about drawing strong conclusions from results based on few recordings.
 
-### 9.4 Preventing Data Leakage
+### 9.4 Data Leakage, Protocol Mismatch, and Pre-Training Overlaps
 
-The validity of the evaluation also depends on how the data is split.
+Two different failures must be distinguished. **Data Leakage** occurs when prohibited information passes from the evaluation processes to training or tuning: the same source recording and a derived version of it appear in different splits; windows from the same file are scattered between Train and Test; Threshold adjustment or Checkpoint selection is carried out based on Test; or information from the evaluation labels reaches the model in another way. When one source produces many synthetic versions (as in PhonemeDF), the splitting unit must take the source family into account.
 
-If recordings of the same speaker appear both in training and in evaluation, the model may exploit speaker features instead of learning patterns related to forgery. Similarly, if examples related to the same generation system or the same content appear in both sets, the result may be optimistic relative to true generalization.
+By contrast, **Protocol Mismatch** occurs when the split itself is valid but the result is presented as evidence for a claim that was not tested. For example, using the same TTS system in training and testing may be entirely valid for a *Known-Generator / Within-Distribution* experiment if the files are independent and there are no prohibited overlaps. It does not prove generalization to a TTS system not seen. Similarly, Speaker-Disjoint does not guarantee Generator-Disjoint. Therefore the Shift dimension each experiment examines must be defined in advance.
 
-For this reason, a random split of recordings without regard to speakers and forgery systems is not sufficient for testing generalization ability.
+An additional type of partial non-independence may exist between the **Pre-training data of a pre-trained Encoder** and the evaluation recordings. The Checkpoint, the known Pre-training sources, and the Provenance of the Test recordings should be documented, as far as possible. Exposure to unlabeled audio in earlier training is not necessarily leakage of test labels, but it limits strong claims about data never seen by the system. The inability to verify overlap will be noted as a research limitation.
 
-Strict adherence to an appropriate data split, to separation between training and tuning, and to preventing the use of test data for model selection is a fundamental condition for a valid interpretation of the results.
+### 9.5 Feasibility and Validity of the Generalization Protocols
+
+The theoretical distinction between **Leave-One-System-Out**, **Speaker-Disjoint**, and **Cross-Dataset** is detailed in Section 2.4. In practice, the validity of each experiment depends on the availability of system, speaker, and source-file identifiers, the number of examples in each subset, the representation of both classes, and the absence of derivatives crossing splits. The full term *Leave-One-System-Out* is preferable here to the abbreviation LOSO, which might also be interpreted as Leave-One-Speaker-Out.
+
+One should not assume in advance that the course data allows a strict test of all types of generalization. An EDA and Metadata check is a precondition for approving feasibility; when there are not enough examples or valid source identifiers, the scope of the claim should be reduced and the protocol should not be presented as if it were fully implemented.
+
+### 9.6 Metrics, Thresholds, and Error Analysis at Different Levels
+
+AT-ADD Track 1 [12] uses Macro-F1, while the research question in the course project is focused on EER. The metrics are complementary but not equivalent: EER is computed from a threshold sweep over continuous scores, while Macro-F1 reflects decisions at a particular threshold and also depends on the class composition. Therefore the model scores should be saved, a Threshold chosen only on Validation, and Real/Fake Recall reported separately. In the case of a single forgery system without a matching Real, Fake Recall can be computed, but not a valid EER for that subset without defining a Real comparison set.
+
+AT-ADD's error analysis found difficult conditions such as BigVGAN and Replay, and high rates of wrongful rejection of Real speech from certain sources. It also showed that complementary error patterns do not guarantee that Majority Voting will improve the best model. Accordingly, a valid research comparison should combine overall EER with reporting by dataset and forgery system, a check of Real/Fake errors, and uncertainty metrics or confidence intervals when the number of evaluation examples allows it. For clips with a shared speaker or source, it is advisable to consider a group-based Bootstrap and not to assume full independence between all the files.
+
+### 9.7 Validity of Results in Data-Expansion Experiments
+
+One should ask whether the observed improvement reflects **more examples**, **more forgery systems**, **more speakers**, **more languages**, or **a change in the source/quality of the recordings**. For this reason, one should not naively compare training on a small base dataset to training on a large external dataset and attribute the difference specifically to Generator diversity. The correct experiment for separating the explanations includes, as far as possible, size-matched training conditions, class balancing, non-leaking speakers/sources, consistent Augmentation, and several repeated runs. The detailed design will appear in Document B; here the research logic and the principle of isolating variables are emphasized.
 
 ---
 
@@ -405,7 +508,7 @@ This problem is sometimes called Shortcut Learning: the model achieves a good fi
 
 A further example is the use of recording features, such as loudness level, background noise, silence duration, bandwidth, or artifacts related to coding. Some of these features may be related to the recording source and not to the fact of it being fake.
 
-Therefore, success on a particular split of the course data will not by itself be sufficient to prove that the model learned forgery features with generalization ability.
+Therefore, success on a particular split of the course data will not by itself be sufficient to prove that the model learned forgery features with generalization ability. A suitable principled analysis would examine the score distribution for Real recordings by source, Fake Recall by forgery system, and the sensitivity of the predictions to silence, loudness, and bandwidth when matched controls can be carried out. Such checks may reveal problematic dependence, but do not by themselves prove which internal feature the model uses for its decision.
 
 ### 10.3 The Challenge of One-Class Learning in This Data
 
@@ -441,73 +544,57 @@ Both goals are important, but they do not fully overlap. A model can achieve a g
 
 It follows that there is a need to examine the generalization question in a dedicated experiment, even when the competition evaluation does not isolate this variable.
 
+### 10.6 External Datasets as Training Candidates: Decisions and Reservations
+
+The new review adds two candidate training datasets, but does not turn their full scope into a binding usage plan. **MLAAD [10]** may expand the number of TTS systems and the diversity of languages. The public distribution page notes a **CC BY-NC 4.0** license for non-commercial academic use; before practical integration, one must also check the terms of use of the source data, the dataset version, the source files, and the possible overlap with M-AILABS, which is used by the course. **PhonemeDF [11]** may add TTS and VC examples from a parallel setup; verification is required that use of the synthetic audio files is permitted, and that the separation between splits is maintained at the source and speaker level and not only at the file level.
+
+**AT-ADD [12]** is classified here as *Research Paper 10*, and not as an applicable external training source: its evaluation protocol is important, but there is no verified access for us to the Track 1 dataset and its terms of use are not verified for the project's purposes. This classification decision preserves the distinction between a dataset we are considering actually integrating and a paper used for building a valid evaluation protocol.
+
+### 10.7 Feasibility Boundaries and Course Deliverables
+
+The guidelines document requires a Baseline with EER, a comparison of additional approaches, analysis by forgery system, and a discussion of generalization between datasets; the final competition set is expected to be sampled from the same three sources and undergo similar processing. Accordingly, the official evaluation examines performance on new examples from defined sources, while strict Shift experiments require dedicated splits that will be approved only after an EDA of speakers, systems, and sources. One cannot assume in advance the feasibility of full Leave-One-System-Out, Speaker-Disjoint, and Cross-Dataset on the limited subset. Document A provides a scientific justification, and Document B will detail the applicable experiment plan in accordance with the findings of the data audit.
+
 ---
 
 ## 11. The Research Gap Emerging from the Literature
 
-The studies reviewed provide evidence for the importance of acoustic representations, deep architectures, pre-trained models, and anomaly-detection methods. However, a significant practical question remains regarding the relationship between the quality of the speech representation, the learning paradigm, and the generalization ability.
+Despite progress in acoustic features, dedicated architectures, and SSL representations, it is sometimes difficult to separate the effect of the **speech representation**, the **learning paradigm**, and the **composition of the training data** on the generalization ability. Studies report improvements in full configurations tested on different datasets, but differences in data, classifier, tuning, and evaluation conditions limit attributing an improvement to a single component [2], [4], [7], [9], [12].
 
-The literature points to several limitations that are not resolved uniformly:
+At the same time, moving between datasets may change together the generation method, the source speakers, the language, and the recording conditions. Therefore an external performance metric makes it possible to identify **that a generalization problem exists**, but does not by itself show **why it occurs**. Error analysis by source or Generator provides diagnostic signals, while a causal explanation requires suitable controls. The difficulty is especially prominent in the course data, where M-AILABS provides Real examples only, and the separation of systems and speakers in the subset requires a Metadata check.
 
-**First gap — distinguishing between detecting known attacks and generalizing to new attacks.** High results on a known dataset do not guarantee similar performance when moving to a different forgery family, as emerges from the CodecFake study and from generalization analyses in other studies.
+Expanding data by means of MLAAD [10] and PhonemeDF [11] raises a complementary question: does a possible improvement stem from more examples, from a diversity of generation systems, or from a change in the speech source? The literature chosen justifies the check, but does not resolve this distinction under our project's conditions. Moreover, some of the generalization results in MLAAD refer to an early version and not to the scope of v11, and PhonemeDF mainly analyzes the phoneme level and does not prove an EER improvement at the recording level.
 
-**Second gap — the difficulty of isolating the contribution of the representation from the classifier.** Certain studies present an improvement stemming from a system including several new components, without an experiment that allows unambiguously identifying the contribution of each component.
+**Our specific research gap** is therefore the need for a controlled comparison and documented evaluation of speech representations and learning methods under distribution shifts that can be defined and verified on a limited course dataset, and for examining the contribution of training-data diversity when the data allows suitable control. There is no claim here that such comparisons were never carried out; this is a justification for a focused empirical study on the task, the limitations, and the splits of the present project.
 
-**Third gap — dependence on the data source.** When different datasets also differ in speakers, recording conditions, and class frequencies, it is difficult to determine whether the model learned forgery features or source features.
+## 12. Deriving the Research Question and Prioritization
 
-**Fourth gap — evaluating One-Class Learning.** One-class learning offers the possibility of detecting attacks without direct training on forgery examples, but may be sensitive to natural variance in speech. In addition, one must distinguish between training without forgery labels and model selection relying on such labels.
+From the synthesis a central research question is derived:
 
-**Fifth gap — the relationship between complexity and generalization ability.** Methods including Reconstruction, Feature Fusion, or multiple sub-networks may improve performance, but it is necessary to check whether the advantage is preserved under a fair protocol and whether it justifies the additional resources.
+**How do the choice of speech representation, the learning paradigm, and the composition of the training data affect the generalization ability of voice forgery detectors to systems and conditions not seen in training, within evaluation protocols that can be verified?**
 
-Based on these gaps, the present study does not seek to assume in advance that a particular architecture is the best. Its purpose is to examine, within the course dataset, which features and learning strategies show more stable performance when the recording source or the forgery-generation method changes.
+For focus, the study is organized along three axes with a clear order of priority, and not as six independent tasks that must all be carried out in full:
 
-It is important to emphasize that the gap described is an **empirical and practical gap relative to the research question and the current data protocol**. It should not be concluded from the nine papers that comparisons between all these approaches have never been made in the broader literature.
+**RQ1 — Representation (a core axis):** How do detection and generalization performance vary between classical features (for example MFCC/CQCC) and SSL representations (wav2vec 2.0/WavLM), when the classifier, the data split, and the comparison conditions are controlled as far as possible?
 
----
+**RQ2 — Learning Paradigm (a core axis):** How does supervised binary classification compare to One-Class Learning on Real speech, when a parallel representation and evaluation protocol are used? The comparison will explicitly report whether Fake labels were used for Validation, Early Stopping, or calibration, so as not to present a system calibrated by means of Fake as fully independent of this class.
 
-## 12. Deriving the Research Question
+**RQ3 — Training Data Diversity (an axis conditional on feasibility):** Given a similar number of training recordings, does exposure to a larger number of TTS/VC systems or families improve generalization to systems not seen in training, beyond the effect of the number of examples? Testing this question depends on access and licensing, on verifying the source of the recordings, and on the ability to create sufficient splits without overlaps.
 
-From the synthesis arises a need to examine separately two central components of a forgery-detection system: the speech representation on which it is based and the learning paradigm it uses.
+**A cross-cutting evaluation layer — not an independent research question:** For each axis, evaluation sets and reporting methods will be defined in advance as far as feasible: overall EER, Real/Fake metrics at a threshold chosen on Validation, analysis by Dataset and Generator, as well as Speaker-Disjoint, Leave-One-System-Out, or Cross-Dataset when the identifiers and the number of examples allow it. For M-AILABS (Real only) we will examine rates of wrongful acceptance/rejection and not an independent EER. Performance gaps between domains will not be interpreted as proof of the causal source of the failure.
 
-The choice of speech representation may affect the type of artifacts the model is able to detect. The learning paradigm may affect the degree of its dependence on known forgery examples and the way it copes with anomalies.
+**Possible extensions, not a commitment to the core of the study:** Feature Fusion, Pooling methods focused on local artifacts, Score Consistency, broader Fine-Tuning, Ensemble, and measuring computational cost. They will be considered according to resources, EDA findings, and their contribution to the core questions.
 
-Accordingly, the following central research question is proposed:
-
-**To what extent do the choice of speech representation and the learning paradigm affect the ability of a voice forgery detection system to generalize to attacks and data sources not included in training, under a controlled evaluation protocol?**
-
-From this question, several sub-questions are derived:
-
-**RQ1 — Speech representation:** How do classical acoustic features, such as MFCC and CQCC, differ from pre-trained SSL representations, such as wav2vec 2.0 and WavLM, in terms of detection and generalization performance?
-
-**RQ2 — Learning paradigm:** Does a one-class classifier based on real speech alone show an advantage over a supervised binary classifier in detecting attacks not included in training?
-
-**RQ3 — Sensitivity to the data source:** How do error rates change when moving between ASVspoof 5, CodecFake, and M-AILABS, and to what extent may the changes indicate dependence on source features instead of forgery features?
-
-**RQ4 — Complexity versus benefit:** Do extensions such as Feature Fusion or learning complex anomaly representations improve performance in a stable manner that justifies their additional cost?
-
-These questions do not predetermine the study's results. They provide a conceptual framework from which measurable hypotheses and an experimental protocol can be derived at the research-planning stage.
-
----
+This framework preserves all the ideas that arose from the papers, but distinguishes between hypotheses for which binding experiments should be planned and possible directions that are not a condition for completing the project.
 
 ## 13. Conclusions of the Literature Review
 
-The integrative review of the nine studies points to significant progress in methods for voice forgery detection, but also to a central limitation that has persisted across different approaches: high detection performance under known evaluation conditions does not guarantee generalization ability to new conditions.
+The twelve studies reviewed demonstrate that voice forgery detection relies on a combination of the audio representation, the learning method, the composition of the training data, and the evaluation protocol. CQCC, AASIST, and SSL representations emphasize different levels of acoustic information, but none of the approaches guarantees generalization to every generation system or recording condition. Guided reconstruction, feature combination, and one-class learning offer alternatives, but their advantage depends on the experimental conditions and on being accompanied by suitable controls.
 
-Classical acoustic features provide a simple and analyzable reference point, but their effectiveness may vary according to the attack's features. Deep architectures such as AASIST make it possible to learn complex relations between temporal and spectral regions, but their ability to cope with new forgery families also depends on the training data.
+ASVspoof 5, CodecFake, and AT-ADD place evaluation validity at the center: success on known systems, on a Generator not included in training, when moving between datasets, or after a channel change are different claims. Differences between domains may expose weakness, but do not necessarily isolate its cause. Separate Real/Fake analysis, preserving continuous scores, thresholds chosen only on Validation, and reporting the limitations of the splits are conditions for a cautious interpretation of the findings.
 
-Self-Supervised Learning models, including wav2vec 2.0 and WavLM, offer the use of pre-trained speech representations, which may be especially useful when the scope of labeled data is limited. However, success in other speech tasks is not direct evidence of robustness in forgery detection.
+MLAAD and PhonemeDF add the possibility of expanding the training diversity, but require control over dataset size, source associations, speakers, licensing, and overlaps. PhonemeDF even raises the possibility that local phonetic information is absorbed in global pooling, but this is a continuation hypothesis and not a proven result in the project's recording-level model. For the course data, in which M-AILABS is represented as Real only, explicit attention to Shortcut Learning and to the limitations of the metrics that can be computed by source is required.
 
-Methods based on guided reconstruction or Feature Fusion propose enriching the representation and improving discriminative ability, but require examining the contribution of the components and the additional computational cost. At the same time, One-Class Learning proposes reducing dependence on known forgery examples, but requires coping with the fact that a deviation from the real-speech distribution is not necessarily a result of forgery.
-
-From the studies it emerges, then, that there is no single solution proven to be superior across every dataset, forgery family, and recording condition. This conclusion reinforces the need for a controlled comparison, in which the models' performance is examined on the same data splits, with separation between speakers and forgery systems and error analysis according to the data source.
-
-In the context of the present study, the significance is that the aspiration is not only to achieve the lowest possible EER, but to understand **which features allow a model to detect forgery, under what conditions this ability is preserved, and when it is harmed as a result of a change in the data distribution**.
-
-From this arises a justification for starting with simple and interpretable models, comparing them to SSL representations, and subsequently examining one-class learning approaches, while maintaining methodological consistency and full reporting of positive and negative results.
-
-The literature review thus provides the theoretical basis for the experiment-planning stage, in which the hypotheses, splitting methods, evaluation metrics, and comparison criteria will be defined in a manner that allows examining the generalization question and not only the classification performance on a single dataset.
-
----
+Accordingly, a controlled comparison is proposed between acoustic representations and SSL representations and between binary classification and one-class learning, with a feasibility-conditional examination of the quantity of training data versus the diversity of attacks. **The purpose of the study is not only to reduce EER, but to determine under what conditions the improvement is preserved, what can be concluded from it, and what remains uncertain.** Document B will describe the design of the experiments and controls that will implement this research logic.
 
 ## Bibliographic Sources
 
@@ -515,13 +602,13 @@ The literature review thus provides the theoretical basis for the experiment-pla
 
 **[2]** Wu, H., Tseng, Y., & Lee, H.-y. (2024). *CodecFake: Enhancing Anti-Spoofing Models Against Deepfake Audios from Codec-Based Speech Synthesis Systems*. Interspeech 2024. https://arxiv.org/abs/2406.07237
 
-**[3]** Todisco, M., Delgado, H., & Evans, N. (2017). *Constant Q Cepstral Coefficients: A Spoofing Countermeasure for Automatic Speaker Verification*. https://www.eurecom.fr/en/publication/5146
+**[3]** Todisco, M., Delgado, H., & Evans, N. (2017). *Constant Q cepstral coefficients: A spoofing countermeasure for automatic speaker verification*. Computer Speech & Language, 45, 516–535. https://doi.org/10.1016/j.csl.2017.01.001
 
 **[4]** Jung, J.-w., Heo, H.-S., Tak, H., Shim, H.-j., Chung, J. S., Lee, B.-J., Yu, H.-J., & Evans, N. (2022). *AASIST: Audio Anti-Spoofing Using Integrated Spectro-Temporal Graph Attention Networks*. ICASSP 2022. https://doi.org/10.1109/ICASSP43922.2022.9747766
 
 **[5]** Baevski, A., Zhou, H., Mohamed, A., & Auli, M. (2020). *wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations*. Advances in Neural Information Processing Systems. https://arxiv.org/abs/2006.11477
 
-**[6]** Chen, S., Wang, C., Chen, Z., Wu, Y., Liu, S., et al. (2022). *WavLM: Large-Scale Self-Supervised Pre-Training for Full Stack Speech Processing*. IEEE Journal of Selected Topics in Signal Processing. https://arxiv.org/abs/2110.13900
+**[6]** Chen, S., Wang, C., Chen, Z., Wu, Y., Liu, S., et al. (2022). *WavLM: Large-Scale Self-Supervised Pre-Training for Full Stack Speech Processing*. IEEE Journal of Selected Topics in Signal Processing, 16(6), 1505–1518. https://doi.org/10.1109/JSTSP.2022.3188113
 
 **[7]** Wu, S., Cheng, Y., Wang, R., & Yan, D. (2026). *Robust Speech Forgery Detection via Enhanced Forensic Trace Generation*. Signal, Image and Video Processing, 20, Article 130. https://doi.org/10.1007/s11760-026-05167-y
 
@@ -529,10 +616,16 @@ The literature review thus provides the theoretical basis for the experiment-pla
 
 **[9]** Yin, J., & Lei, S. (2026). *A Novel Attack-Resistant Speech Forgery Detection Method Integrating One-Class Learning and Wav2vec2*. 2026 International Conference on Communication Networks and Machine Learning (CNML), 415–419. IEEE. https://doi.org/10.1109/CNML68938.2026.11452384
 
+**[10]** Müller, N. M., Kawa, P., Choong, W. H., Casanova, E., Gölge, E., Müller, T., Syga, P., Sperl, P., & Böttinger, K. (2024). *MLAAD: The Multi-Language Audio Anti-Spoofing Dataset*. 2024 International Joint Conference on Neural Networks (IJCNN), 1–7. https://doi.org/10.1109/IJCNN60899.2024.10650962. **The updated dataset scope in the review is taken from the arXiv v11 version (2026)**: https://arxiv.org/abs/2401.09512
+
+**[11]** Nallaguntla, V., Fursule, A., Kshirsagar, S., & Avila, A. R. (2026). *PhonemeDF: A Synthetic Speech Dataset for Audio Deepfake Detection and Naturalness Evaluation*. Proceedings of LREC 2026, 5905–5915. https://aclanthology.org/2026.lrec-1.469/
+
+**[12]** Xie, Y., Cheng, H., Zhou, J., et al. (2026). *AT-ADD: A Benchmark and Challenge for Robust and All-Type Audio Deepfake Detection*. arXiv:2608.23437v2 (15 October 2026). The paper describes the ACM Multimedia 2026 Grand Challenge; this is not a determination that publication of the paper itself in the conference proceedings has been verified. https://arxiv.org/abs/2608.23437
+
 ### Source for the Task Definition and Research Data
 
-The course requirements document, *Voice Deepfake Detection: Real or Fake?*, Advanced Topics in Machine Learning, HIT, October 2026. This source is used to describe the dataset, the project requirements, and the required evaluation protocol; it is not included as a tenth research paper in the literature review.
+The course guidelines document, *Voice Deepfake Detection: Real or Fake?*, Advanced Topics in Machine Learning, HIT, October 2026. This source is used to describe the dataset, the project requirements, and the required evaluation protocol; it is not counted as a research paper in the literature review.
 
 ---
 
-**Note on the scope of the review:** This is an integrative review document based on nine sources chosen for their relevance to the research question. It is not an exhaustive systematic review of all publications in the field. The numerical results presented in the document are results reported in the original studies, and not results of an experiment conducted within the course project. The research questions and their implications for the present dataset are our own research synthesis and interpretation, and not conclusions jointly verified by the papers' authors.
+**Note on the scope of the review:** This is an integrative review document based on the twelve papers we read and analyzed, chosen for their relevance to the research question. It is not an exhaustive systematic review of all publications in the field. The numerical results presented in the document are results reported in the original studies, and not results of an experiment conducted within the course project. The research questions and their implications for the present dataset are our own research synthesis and interpretation, and not conclusions jointly verified by the papers' authors.
