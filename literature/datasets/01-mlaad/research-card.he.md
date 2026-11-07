@@ -26,7 +26,7 @@
 
 **מילות מפתח:** MLAAD, M-AILABS, Text-to-Speech, TTS, Multilingual Data, Synthetic Speech, Cross-Dataset Evaluation, Data Diversity, Provenance, Accuracy, EER.
 
-**סיווג בסקירת הספרות:** Research Card 10 — Dataset / Benchmark Paper.
+**סיווג בסקירת הספרות:** Dataset Research Card 01 — External Dataset Sources.
 
 **רלוונטיות לפרויקט:** גבוהה מאוד. המאמר מציג מקור נתונים אפשרי להרחבת האימון, בוחן את השפעת מאגר האימון על הכללה בין מאגרים, וקשור ישירות ל-M-AILABS, שכבר נכלל בנתוני פרויקט הקורס.
 

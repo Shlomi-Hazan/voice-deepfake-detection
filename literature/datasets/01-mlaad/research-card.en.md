@@ -26,7 +26,7 @@
 
 **Keywords:** MLAAD, M-AILABS, Text-to-Speech, TTS, Multilingual Data, Synthetic Speech, Cross-Dataset Evaluation, Data Diversity, Provenance, Accuracy, EER.
 
-**Classification in the literature review:** Research Card 10 — Dataset / Benchmark Paper.
+**Classification in the literature review:** Dataset Research Card 01 — External Dataset Sources.
 
 **Relevance to the project:** Very high. The paper presents a possible data source for expanding training, examines the effect of the training dataset on cross-dataset generalization, and is directly connected to M-AILABS, which is already included in the course project's data.
 
