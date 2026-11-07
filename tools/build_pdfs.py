@@ -121,14 +121,14 @@ def render_html(md_path: Path) -> tuple[str, str]:
 
     css = CSS % dict(
         font=FONT,
-        size=((("11.6pt" if len(text) < 3300 else "11.0pt" if len(text) < 4000 else "10.4pt" if len(text) < 4300 else "10.0pt" if len(text) < 4600 else "9.5pt" if len(text) < 4700 else "9.1pt") if lang == "he"
-               else ("10.8pt" if len(text) < 3300 else "10.2pt" if len(text) < 4200 else "9.6pt" if len(text) < 5200 else "9.1pt" if len(text) < 6200 else "8.6pt" if len(text) < 6600 else "8.2pt")) if is_summary
+        size=((("11.6pt" if len(text) < 3300 else "11.0pt" if len(text) < 4000 else "10.4pt" if len(text) < 4300 else "10.0pt" if len(text) < 4600 else "9.5pt" if len(text) < 4700 else "9.1pt" if len(text) < 5500 else "8.7pt") if lang == "he"
+               else ("10.8pt" if len(text) < 3300 else "10.2pt" if len(text) < 4200 else "9.6pt" if len(text) < 5200 else "9.1pt" if len(text) < 6200 else "8.6pt" if len(text) < 6600 else "8.2pt" if len(text) < 7500 else "7.6pt")) if is_summary
               else ("12.2pt" if lang == "he" else "11.5pt")),
         align="justify" if is_summary else "start",
         start="right" if lang == "he" else "left",
     )
     if is_summary:  # compact: the summary should fit one page
-        css += "body{line-height:1.45} h1{font-size:18pt} h2{margin-top:1.1em} p{margin:0.4em 0}"
+        css += "body{line-height:1.36} h1{font-size:18pt} h2{margin-top:1.0em} p{margin:0.32em 0}"
     doc = (f'<!DOCTYPE html><html lang="{lang}" dir="{"rtl" if lang == "he" else "ltr"}">'
            f'<head><meta charset="utf-8"><title>{html.escape(title)}</title>'
            f"<style>{css}</style></head><body>{body}</body></html>")

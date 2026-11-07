@@ -13,6 +13,7 @@
 | `make_figures_intelligent_voice_fraud.py` | Renders the three illustrations of the Intelligent Voice Fraud Detection research card (HE + EN) into `literature/08-intelligent-voice-fraud/figures/`. |
 | `make_figures_one_class_wav2vec2.py` | Renders the two illustrations of the One-Class Learning + wav2vec 2.0 research card (HE + EN) into `literature/09-one-class-wav2vec2/figures/`. |
 | `make_figures_mlaad.py` | Renders the three illustrations of the MLAAD dataset research card (HE + EN) into `literature/datasets/01-mlaad/figures/`. |
+| `make_figures_phonemedf.py` | Renders the three illustrations of the PhonemeDF dataset research card (HE + EN) into `literature/datasets/02-phonemedf/figures/`. |
 
 ## Setup (once)
 ```
