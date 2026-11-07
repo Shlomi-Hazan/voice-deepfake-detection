@@ -27,3 +27,6 @@ Translations are direct and exact; technical terms stay in English.
 *Note: the AASIST and One-Class Learning + Wav2vec2 links point to IEEE Xplore.
 Some IEEE pages require institutional access to view the full text; the
 bibliographic page itself is open to everyone.*
+
+## External dataset sources
+1. [MLAAD](https://arxiv.org/abs/2401.09512)
